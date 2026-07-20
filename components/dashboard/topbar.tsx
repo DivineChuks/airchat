@@ -1,11 +1,31 @@
-import { LogOut } from "lucide-react";
+"use client";
+
+import { LogOut, Menu } from "lucide-react";
 import { logoutAction } from "@/app/login/actions";
 
-export function Topbar({ username }: { username: string }) {
+export function Topbar({
+  username,
+  onMenuClick,
+}: {
+  username: string;
+  onMenuClick?: () => void;
+}) {
   return (
     <header className="flex h-14 items-center justify-between border-b border-neutral-200 bg-white px-4 sm:px-6">
-      <div className="text-sm text-neutral-500">
-        Data source: <span className="text-amber-600">sample data</span>
+      <div className="flex items-center gap-3">
+        {onMenuClick && (
+          <button
+            type="button"
+            onClick={onMenuClick}
+            aria-label="Open menu"
+            className="-ml-1.5 rounded-lg p-1.5 text-neutral-600 transition hover:bg-neutral-100 sm:hidden"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        )}
+        <div className="text-sm text-neutral-500">
+          Data source: <span className="text-amber-600">sample data</span>
+        </div>
       </div>
       <div className="flex items-center gap-3">
         <span className="text-sm text-neutral-700">{username}</span>

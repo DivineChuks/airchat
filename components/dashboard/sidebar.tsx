@@ -16,15 +16,18 @@ function NavLink({
   label,
   icon: Icon,
   isActive,
+  onNavigate,
 }: {
   href: string;
   label: string;
   icon: typeof Settings;
   isActive: boolean;
+  onNavigate?: () => void;
 }) {
   return (
     <Link
       href={href}
+      onClick={onNavigate}
       className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition ${
         isActive
           ? "bg-indigo-600 text-white"
@@ -37,7 +40,7 @@ function NavLink({
   );
 }
 
-export function Sidebar() {
+export function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
   const pathname = usePathname();
 
   return (
@@ -49,6 +52,7 @@ export function Sidebar() {
           label={item.label}
           icon={item.icon}
           isActive={item.exact ? pathname === item.href : pathname.startsWith(item.href)}
+          onNavigate={onNavigate}
         />
       ))}
 
@@ -58,6 +62,7 @@ export function Sidebar() {
           label={FOOTER_ITEM.label}
           icon={FOOTER_ITEM.icon}
           isActive={pathname.startsWith(FOOTER_ITEM.href)}
+          onNavigate={onNavigate}
         />
       </div>
     </nav>
