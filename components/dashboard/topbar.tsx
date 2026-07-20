@@ -5,7 +5,7 @@ export function Topbar({ username }: { username: string }) {
   return (
     <header className="flex h-14 items-center justify-between border-b border-neutral-200 bg-white px-4 sm:px-6">
       <div className="text-sm text-neutral-500">
-        Data source: <span className="text-amber-600">sample data (mock)</span>
+        Data source: <span className="text-amber-600">sample data</span>
       </div>
       <div className="flex items-center gap-3">
         <span className="text-sm text-neutral-700">{username}</span>
