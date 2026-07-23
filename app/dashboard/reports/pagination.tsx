@@ -56,7 +56,7 @@ export function Pagination({
                 href={hrefFor(p)}
                 className={`flex h-7 w-7 items-center justify-center rounded-lg text-xs font-medium transition ${
                   p === page
-                    ? "bg-indigo-600 text-white"
+                    ? "bg-blue-700 text-white"
                     : "text-neutral-600 hover:bg-neutral-100"
                 }`}
               >

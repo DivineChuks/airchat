@@ -43,7 +43,7 @@ export default async function ReportDetailPage({
         Back to reports
       </Link>
 
-      <div className="rounded-2xl border border-neutral-200 bg-white p-6">
+      <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className="font-mono text-xs text-neutral-400">{report.reference_number}</p>
@@ -66,15 +66,14 @@ export default async function ReportDetailPage({
 
         <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3">
           <Field label="Citizen" value={report.citizen_name} />
-          <Field label="Phone" value={report.phone} />
           <Field label="Source" value={report.source_channel} />
           <Field label="LGA" value={report.lga} />
           <Field label="Ward" value={report.ward} />
           <Field label="Community" value={report.community} />
+          <Field label="Location" value={report.location} />
           <Field label="Category" value={report.category} />
           <Field label="Subcategory" value={report.subcategory} />
           <Field label="Assigned department" value={report.department} />
-          <Field label="Language" value={report.language} />
           <Field label="Sentiment" value={report.sentiment} />
           <Field label="Reported" value={formatDateTime(report.created_at)} />
           <Field label="Last updated" value={formatDateTime(report.updated_at)} />

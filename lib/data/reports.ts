@@ -1,14 +1,97 @@
-import { MOCK_REPORTS } from "@/lib/data/mock-reports";
+import { cache } from "react";
+import { createServiceRoleClient } from "@/lib/supabase/server";
 import type {
+  AkwaIbomMockDataRow,
   PriorityLevel,
   Report,
   ReportStatus,
+  SentimentType,
 } from "@/lib/supabase/types";
 
-// This module is the single seam between the UI and the report data source.
-// Every function is async and returns the same shape a Supabase query would,
-// so pages can be built and demoed against MOCK_REPORTS now and swapped to
-// real `supabase.from("reports")...` calls later without touching callers.
+// This module is the single seam between the UI and the report data source:
+// the live "Akwa Ibom Mock Data" table in Supabase. All filtering/pagination/
+// stats below run in memory over the full row set, which is fine at this
+// table's size — swap to server-side query filters if it grows significantly.
+
+const TABLE = "Akwa Ibom Mock Data" as const;
+
+const VALID_PRIORITIES: PriorityLevel[] = ["low", "medium", "high", "critical"];
+const VALID_STATUSES: ReportStatus[] = ["new", "assigned", "in_progress", "resolved", "closed"];
+const VALID_SENTIMENTS: SentimentType[] = ["positive", "neutral", "negative"];
+
+// The source table uses its own free-text vocabulary ("Urgent", "Open", ...)
+// rather than the app's enums, so reads/writes go through these coercions.
+function coercePriority(value: string | null): PriorityLevel {
+  const norm = (value ?? "").toLowerCase().trim();
+  if (norm === "urgent" || norm === "emergency") return "critical";
+  return (VALID_PRIORITIES as string[]).includes(norm) ? (norm as PriorityLevel) : "medium";
+}
+
+function coerceStatus(value: string | null): ReportStatus {
+  const norm = (value ?? "").toLowerCase().trim().replace(/[\s-]+/g, "_");
+  if (norm === "open" || norm === "pending") return "new";
+  return (VALID_STATUSES as string[]).includes(norm) ? (norm as ReportStatus) : "new";
+}
+
+const STATUS_TO_DB: Record<ReportStatus, string> = {
+  new: "Open",
+  assigned: "Assigned",
+  in_progress: "In Progress",
+  resolved: "Resolved",
+  closed: "Closed",
+};
+
+function coerceSentiment(value: string | null): SentimentType | null {
+  const norm = (value ?? "").toLowerCase().trim();
+  return (VALID_SENTIMENTS as string[]).includes(norm) ? (norm as SentimentType) : null;
+}
+
+function parseDate(value: string | null): string {
+  const parsed = value ? new Date(value) : null;
+  return parsed && !isNaN(parsed.getTime()) ? parsed.toISOString() : new Date().toISOString();
+}
+
+function mapRow(row: AkwaIbomMockDataRow): Report {
+  const id = String(row.id);
+  const ticketId = row.ticket_id != null ? String(row.ticket_id) : id;
+
+  return {
+    id,
+    reference_number: `AI-${ticketId}`,
+    constituent_id: null,
+    citizen_name: row.citizen_name,
+    phone: null,
+    telegram_user_id: null,
+    message: row.message ?? "",
+    summary: null,
+    category: row.category,
+    subcategory: row.subcategory,
+    priority: coercePriority(row.priority),
+    status: coerceStatus(row.status),
+    department: row.mda,
+    lga: row.lga,
+    ward: row.ward,
+    community: row.community,
+    location: row.Location,
+    latitude: null,
+    longitude: null,
+    language: null,
+    sentiment: coerceSentiment(row.sentiment),
+    source_channel: row.source_channel || "Other",
+    n8n_execution_id: row.n8n_execution_url,
+    created_at: parseDate(row.created_at),
+    updated_at: parseDate(row.updated_at),
+  };
+}
+
+// Memoized per request (React cache) so the overview page, reports page, and
+// layout can each call into this module without triggering duplicate fetches.
+const getAllReports = cache(async (): Promise<Report[]> => {
+  const supabase = createServiceRoleClient();
+  const { data, error } = await supabase.from(TABLE).select("*");
+  if (error) throw new Error(`Failed to load reports from Supabase: ${error.message}`);
+  return (data ?? []).map(mapRow);
+});
 
 export interface ReportFilters {
   search?: string;
@@ -22,7 +105,7 @@ export interface ReportFilters {
 }
 
 export async function getReports(filters: ReportFilters = {}): Promise<Report[]> {
-  let results = [...MOCK_REPORTS];
+  let results = await getAllReports();
 
   if (filters.search) {
     const q = filters.search.toLowerCase();
@@ -78,119 +161,25 @@ export async function getPaginatedReports(
 }
 
 export async function getReportById(id: string): Promise<Report | null> {
-  return MOCK_REPORTS.find((r) => r.id === id) ?? null;
+  const all = await getAllReports();
+  return all.find((r) => r.id === id) ?? null;
 }
 
 export async function updateReportStatus(id: string, status: ReportStatus): Promise<void> {
-  // Demo-only: mutates the in-memory fixture array. This is a stand-in for a
-  // real `supabase.from("reports").update(...)` call and only persists for
-  // the lifetime of this server process.
-  const report = MOCK_REPORTS.find((r) => r.id === id);
-  if (report) {
-    report.status = status;
-    report.updated_at = new Date().toISOString();
-  }
-}
-
-export interface ImportRowInput {
-  message: string;
-  reference_number?: string | null;
-  citizen_name?: string | null;
-  phone?: string | null;
-  summary?: string | null;
-  category?: string | null;
-  subcategory?: string | null;
-  priority?: string | null;
-  status?: string | null;
-  department?: string | null;
-  lga?: string | null;
-  ward?: string | null;
-  community?: string | null;
-  language?: string | null;
-  sentiment?: string | null;
-  created_at?: string | null;
-}
-
-const VALID_PRIORITIES: PriorityLevel[] = ["low", "medium", "high", "critical"];
-const VALID_STATUSES: ReportStatus[] = ["new", "assigned", "in_progress", "resolved", "closed"];
-const VALID_SENTIMENTS = ["positive", "neutral", "negative"] as const;
-
-function coercePriority(value?: string | null): PriorityLevel {
-  const norm = (value ?? "").toLowerCase().trim();
-  return (VALID_PRIORITIES as string[]).includes(norm) ? (norm as PriorityLevel) : "medium";
-}
-
-function coerceStatus(value?: string | null): ReportStatus {
-  const norm = (value ?? "").toLowerCase().trim().replace(/[\s-]+/g, "_");
-  return (VALID_STATUSES as string[]).includes(norm) ? (norm as ReportStatus) : "new";
-}
-
-function coerceSentiment(value?: string | null): Report["sentiment"] {
-  const norm = (value ?? "").toLowerCase().trim();
-  return (VALID_SENTIMENTS as readonly string[]).includes(norm)
-    ? (norm as (typeof VALID_SENTIMENTS)[number])
-    : null;
-}
-
-let importSequence = MOCK_REPORTS.length;
-
-export async function importReports(
-  rows: ImportRowInput[]
-): Promise<{ inserted: number; skipped: number }> {
-  // Demo-only: mutates the in-memory fixture array, standing in for a real
-  // batch `supabase.from("reports").insert(...)` call.
-  let inserted = 0;
-  let skipped = 0;
-
-  for (const row of rows) {
-    const message = row.message?.trim();
-    if (!message) {
-      skipped += 1;
-      continue;
-    }
-    importSequence += 1;
-    const now = new Date().toISOString();
-    const parsedDate = row.created_at ? new Date(row.created_at) : null;
-    const createdAt = parsedDate && !isNaN(parsedDate.getTime()) ? parsedDate.toISOString() : now;
-
-    MOCK_REPORTS.push({
-      id: `import-${Date.now()}-${importSequence}`,
-      reference_number: row.reference_number?.trim() || `AC-${String(100000 + importSequence).padStart(6, "0")}`,
-      constituent_id: null,
-      citizen_name: row.citizen_name?.trim() || null,
-      phone: row.phone?.trim() || null,
-      telegram_user_id: null,
-      message,
-      summary: row.summary?.trim() || (message.length > 60 ? message.slice(0, 57) + "..." : message),
-      category: row.category?.trim() || null,
-      subcategory: row.subcategory?.trim() || null,
-      priority: coercePriority(row.priority),
-      status: coerceStatus(row.status),
-      department: row.department?.trim() || null,
-      lga: row.lga?.trim() || null,
-      ward: row.ward?.trim() || null,
-      community: row.community?.trim() || null,
-      latitude: null,
-      longitude: null,
-      language: row.language?.trim() || null,
-      sentiment: coerceSentiment(row.sentiment),
-      source_channel: "import",
-      n8n_execution_id: null,
-      created_at: createdAt,
-      updated_at: now,
-    });
-    inserted += 1;
-  }
-
-  MOCK_REPORTS.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-  return { inserted, skipped };
+  const supabase = createServiceRoleClient();
+  const { error } = await supabase
+    .from(TABLE)
+    .update({ status: STATUS_TO_DB[status], updated_at: new Date().toISOString() })
+    .eq("id", Number(id));
+  if (error) throw new Error(`Failed to update report status: ${error.message}`);
 }
 
 export async function getReportFacets() {
+  const reports = await getAllReports();
   const lgas = new Set<string>();
   const wards = new Set<string>();
   const categories = new Set<string>();
-  for (const r of MOCK_REPORTS) {
+  for (const r of reports) {
     if (r.lga) lgas.add(r.lga);
     if (r.ward) wards.add(r.ward);
     if (r.category) categories.add(r.category);
@@ -222,9 +211,11 @@ export interface DashboardStats {
 }
 
 export async function getDashboardStats(): Promise<DashboardStats> {
-  const reports = MOCK_REPORTS;
+  const reports = await getAllReports();
 
-  const constituentIds = new Set(reports.map((r) => r.constituent_id).filter(Boolean));
+  // No constituent-linking table behind this dataset — distinct citizen
+  // names stand in for "citizens engaged".
+  const citizenNames = new Set(reports.map((r) => r.citizen_name).filter(Boolean));
   const communities = new Set(reports.map((r) => r.community).filter(Boolean));
   const openStatuses: ReportStatus[] = ["new", "assigned", "in_progress"];
   const openCases = reports.filter((r) => openStatuses.includes(r.status)).length;
@@ -285,7 +276,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     .slice(0, 3);
 
   return {
-    citizensEngaged: constituentIds.size,
+    citizensEngaged: citizenNames.size,
     reportsReceived: reports.length,
     communitiesCovered: communities.size,
     openCases,

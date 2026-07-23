@@ -37,7 +37,7 @@ export function FilterBar() {
   }, [search]);
 
   return (
-    <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-neutral-200 bg-white p-4">
+    <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
       <div className="min-w-55 flex-1">
         <label className="mb-1 block text-xs font-medium text-neutral-500">Search</label>
         <input
@@ -45,7 +45,7 @@ export function FilterBar() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Message, reference, citizen..."
-          className="w-full rounded-lg border border-neutral-300 bg-white px-2.5 py-1.5 text-sm text-neutral-900 outline-none focus:border-indigo-500"
+          className="w-full rounded-lg border border-neutral-300 bg-white px-2.5 py-1.5 text-sm text-neutral-900 outline-none focus:border-blue-600"
         />
       </div>
 
@@ -54,7 +54,7 @@ export function FilterBar() {
         <select
           defaultValue={searchParams.get("status") ?? ""}
           onChange={(e) => updateParam("status", e.target.value)}
-          className="rounded-lg border border-neutral-300 bg-white px-2.5 py-1.5 text-sm text-neutral-900 outline-none focus:border-indigo-500"
+          className="rounded-lg border border-neutral-300 bg-white px-2.5 py-1.5 text-sm text-neutral-900 outline-none focus:border-blue-600"
         >
           <option value="">All</option>
           {STATUSES.map((s) => (
@@ -70,7 +70,7 @@ export function FilterBar() {
         <select
           defaultValue={searchParams.get("priority") ?? ""}
           onChange={(e) => updateParam("priority", e.target.value)}
-          className="rounded-lg border border-neutral-300 bg-white px-2.5 py-1.5 text-sm text-neutral-900 outline-none focus:border-indigo-500"
+          className="rounded-lg border border-neutral-300 bg-white px-2.5 py-1.5 text-sm text-neutral-900 outline-none focus:border-blue-600"
         >
           <option value="">All</option>
           {PRIORITIES.map((p) => (

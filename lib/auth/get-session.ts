@@ -1,7 +1,11 @@
-import { cookies } from "next/headers";
-import { SESSION_COOKIE, verifySessionToken } from "@/lib/auth/session";
+import { createAuthServerClient } from "@/lib/supabase/auth-server";
 
 export async function getSession() {
-  const cookieStore = await cookies();
-  return verifySessionToken(cookieStore.get(SESSION_COOKIE)?.value);
+  const supabase = await createAuthServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return null;
+  return { username: user.email ?? "admin" };
 }

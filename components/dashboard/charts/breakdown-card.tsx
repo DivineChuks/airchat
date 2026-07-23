@@ -14,7 +14,7 @@ export function BreakdownCard({ datasets }: { datasets: BreakdownDataset[] }) {
   const active = datasets.find((d) => d.key === activeKey) ?? datasets[0];
 
   return (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-4">
+    <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-sm font-medium text-neutral-700">Reports by {active?.label.toLowerCase()}</h2>
         <div className="flex items-center gap-1 rounded-lg border border-neutral-200 bg-neutral-50 p-0.5">

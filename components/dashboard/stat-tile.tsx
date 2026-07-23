@@ -26,13 +26,24 @@ export function StatTile({
         ? "text-emerald-600"
         : "text-neutral-900";
 
+  const iconChipColor =
+    tone === "critical"
+      ? "bg-red-50 text-red-500"
+      : tone === "good"
+        ? "bg-emerald-50 text-emerald-500"
+        : "bg-blue-50 text-blue-600";
+
   return (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-4">
+    <div className="group rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-neutral-500">{label}</span>
-        {Icon && <Icon className="h-4 w-4 text-neutral-400" />}
+        {Icon && (
+          <span className={`flex h-7 w-7 items-center justify-center rounded-lg ${iconChipColor}`}>
+            <Icon className="h-3.5 w-3.5" />
+          </span>
+        )}
       </div>
-      <div className={`mt-2 text-2xl font-semibold ${valueColor}`}>
+      <div className={`mt-2.5 text-2xl font-semibold tracking-tight ${valueColor}`}>
         {formatCompact(value)}
         {suffix && <span className="ml-1 text-sm font-normal text-neutral-400">{suffix}</span>}
       </div>

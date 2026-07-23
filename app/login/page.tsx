@@ -9,13 +9,18 @@ export default function LoginPage() {
   const [state, formAction, pending] = useActionState(loginAction, initialState);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4">
-      <div className="w-full max-w-sm">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-50 px-4">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-32 left-1/2 h-80 w-xl -translate-x-1/2 rounded-full bg-blue-900/10 blur-3xl"
+      />
+
+      <div className="relative w-full max-w-sm">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600 text-lg font-semibold text-white">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-900 text-lg font-semibold text-white shadow-sm">
             A
           </div>
-          <h1 className="text-xl font-semibold text-neutral-900">Airchat</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-neutral-900">Airchat</h1>
           <p className="mt-1 text-sm text-neutral-500">
             Citizens Intelligence Platform
           </p>
@@ -23,23 +28,23 @@ export default function LoginPage() {
 
         <form
           action={formAction}
-          className="space-y-4 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm"
+          className="space-y-4 rounded-2xl border border-neutral-200 bg-white p-6 shadow-md shadow-neutral-200/50"
         >
           <div>
             <label
-              htmlFor="username"
+              htmlFor="email"
               className="mb-1.5 block text-sm font-medium text-neutral-700"
             >
-              Username
+              Email
             </label>
             <input
-              id="username"
-              name="username"
-              type="text"
-              autoComplete="username"
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
               required
-              className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-              placeholder="admin"
+              className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 outline-none transition focus:border-blue-700 focus:ring-1 focus:ring-blue-700"
+              placeholder="you@example.com"
             />
           </div>
 
@@ -56,7 +61,7 @@ export default function LoginPage() {
               type="password"
               autoComplete="current-password"
               required
-              className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 outline-none transition focus:border-blue-700 focus:ring-1 focus:ring-blue-700"
               placeholder="••••••••"
             />
           </div>
@@ -70,7 +75,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={pending}
-            className="w-full rounded-lg bg-indigo-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full rounded-lg bg-blue-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {pending ? "Signing in..." : "Sign in"}
           </button>

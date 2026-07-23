@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { getPaginatedReports, type ReportFilters } from "@/lib/data/reports";
 import { PriorityBadge, StatusBadge } from "@/components/dashboard/badges";
-import { ImportExportBar } from "./import-panel";
+import { ExportBar } from "./export-bar";
 import { FilterBar } from "./filter-bar";
 import { Pagination } from "./pagination";
 import type { PriorityLevel, ReportStatus } from "@/lib/supabase/types";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 const MONTH_ABBR = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -50,20 +50,20 @@ export default async function ReportsPage({
     <div className="space-y-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-lg font-semibold text-neutral-900">Issue Management</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-neutral-900">Issue Management</h1>
           <p className="mt-1 text-sm text-neutral-500">{total} reports</p>
         </div>
-        <ImportExportBar
+        <ExportBar
           exportHref={`/dashboard/reports/export${filterQuery ? `?${filterQuery}` : ""}`}
         />
       </div>
 
       <FilterBar />
 
-      <div className="overflow-x-auto rounded-2xl border border-neutral-200 bg-white">
+      <div className="overflow-x-auto rounded-2xl border border-neutral-200 bg-white shadow-sm">
         <table className="w-full min-w-225 text-sm">
           <thead>
-            <tr className="border-b border-neutral-200 text-left text-xs text-neutral-400">
+            <tr className="border-b border-neutral-200 bg-neutral-50/60 text-left text-xs font-medium tracking-wide text-neutral-500 uppercase">
               <th className="px-4 py-3 font-medium">Reference</th>
               <th className="px-4 py-3 font-medium">Citizen</th>
               <th className="px-4 py-3 font-medium">Community</th>
@@ -77,9 +77,9 @@ export default async function ReportsPage({
           </thead>
           <tbody className="divide-y divide-neutral-100">
             {reports.map((r) => (
-              <tr key={r.id} className="align-top hover:bg-neutral-50">
+              <tr key={r.id} className="align-top transition-colors hover:bg-blue-50/40">
                 <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-neutral-400">
-                  <Link href={`/dashboard/reports/${r.id}`} className="hover:text-indigo-600">
+                  <Link href={`/dashboard/reports/${r.id}`} className="hover:text-blue-700">
                     {r.reference_number}
                   </Link>
                 </td>
@@ -92,7 +92,7 @@ export default async function ReportsPage({
                   </div>
                 </td>
                 <td className="max-w-70 px-4 py-3 text-neutral-700">
-                  <Link href={`/dashboard/reports/${r.id}`} className="line-clamp-2 hover:text-indigo-600">
+                  <Link href={`/dashboard/reports/${r.id}`} className="line-clamp-2 hover:text-blue-700">
                     {r.summary ?? r.message}
                   </Link>
                 </td>

@@ -30,8 +30,8 @@ export default async function OverviewPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-lg font-semibold text-neutral-900">Executive Brief</h1>
-        <p className="mt-1 max-w-3xl text-sm leading-relaxed text-neutral-500">
+        <h1 className="text-xl font-semibold tracking-tight text-neutral-900">Executive Brief</h1>
+        <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-neutral-500">
           {stats.reportsReceived} reports received across {stats.communitiesCovered}{" "}
           communities. {stats.criticalCases} case{stats.criticalCases === 1 ? "" : "s"} flagged
           critical.{" "}
@@ -58,11 +58,11 @@ export default async function OverviewPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <div className="rounded-2xl border border-neutral-200 bg-white p-4 lg:col-span-2">
+        <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm lg:col-span-2">
           <h2 className="mb-4 text-sm font-medium text-neutral-700">Reports by day (last 14 days)</h2>
           <TrendChart data={stats.reportsByDay} />
         </div>
-        <div className="rounded-2xl border border-neutral-200 bg-white p-4">
+        <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
           <h2 className="mb-4 text-sm font-medium text-neutral-700">Citizen sentiment</h2>
           <SentimentBreakdown data={stats.sentimentBreakdown} />
           <div className="mt-4 flex items-center gap-2 text-xs text-neutral-400">
@@ -87,16 +87,19 @@ export default async function OverviewPage() {
         ]}
       />
 
-      <div className="rounded-2xl border border-neutral-200 bg-white p-4">
+      <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-medium text-neutral-700">Recent activity</h2>
-          <Link href="/dashboard/reports" className="text-xs font-medium text-indigo-600 hover:text-indigo-500">
+          <Link href="/dashboard/reports" className="text-xs font-medium text-blue-700 hover:text-blue-600">
             View all reports →
           </Link>
         </div>
-        <ul className="divide-y divide-neutral-200">
+        <ul className="divide-y divide-neutral-100">
           {stats.recentActivity.map((r) => (
-            <li key={r.id} className="flex items-center justify-between gap-4 py-2.5 text-sm">
+            <li
+              key={r.id}
+              className="-mx-2 flex items-center justify-between gap-4 rounded-lg px-2 py-2.5 text-sm transition-colors hover:bg-blue-50/40"
+            >
               <div className="min-w-0 flex-1">
                 <p className="truncate text-neutral-800">{r.summary ?? r.message}</p>
                 <p className="mt-0.5 text-xs text-neutral-400">

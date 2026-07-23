@@ -1,26 +1,53 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { SESSION_COOKIE, verifySessionToken } from "@/lib/auth/session";
+import { createServerClient } from "@supabase/ssr";
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
+  let response = NextResponse.next({ request });
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+          response = NextResponse.next({ request });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          );
+        },
+      },
+    }
+  );
+
+  // Revalidates the session against Supabase (not just a local cookie check)
+  // and refreshes it if needed — required so the cookie doesn't silently
+  // expire mid-session.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   const { pathname } = request.nextUrl;
-  const session = verifySessionToken(request.cookies.get(SESSION_COOKIE)?.value);
 
   if (pathname === "/") {
-    return NextResponse.redirect(new URL(session ? "/dashboard" : "/login", request.url));
+    return NextResponse.redirect(new URL(user ? "/dashboard" : "/login", request.url));
   }
 
-  if (pathname.startsWith("/dashboard") && !session) {
+  if (pathname.startsWith("/dashboard") && !user) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  if (pathname === "/login" && session) {
+  if (pathname === "/login" && user) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
