@@ -48,11 +48,10 @@ export default async function ReportsPage({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight text-neutral-900">Issue Management</h1>
-          <p className="mt-1 text-sm text-neutral-500">{total} reports</p>
-        </div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-neutral-500">
+          <span className="font-medium text-neutral-800">{total}</span> reports
+        </p>
         <ExportBar
           exportHref={`/reports/export${filterQuery ? `?${filterQuery}` : ""}`}
         />

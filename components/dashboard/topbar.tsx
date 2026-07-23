@@ -1,7 +1,19 @@
 "use client";
 
 import { LogOut, Menu } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { logoutAction } from "@/app/login/actions";
+
+const PAGE_TITLES: { test: (pathname: string) => boolean; title: string }[] = [
+  { test: (p) => p === "/dashboard", title: "Overview" },
+  { test: (p) => p === "/dashboard/settings", title: "Settings" },
+  { test: (p) => p === "/reports", title: "Reports" },
+  { test: (p) => p.startsWith("/reports/"), title: "Report Details" },
+];
+
+function pageTitleFor(pathname: string): string {
+  return PAGE_TITLES.find((entry) => entry.test(pathname))?.title ?? "Airchat";
+}
 
 export function Topbar({
   username,
@@ -11,6 +23,8 @@ export function Topbar({
   onMenuClick?: () => void;
 }) {
   const initial = username.charAt(0).toUpperCase();
+  const pathname = usePathname();
+  const title = pageTitleFor(pathname);
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-neutral-200/80 bg-white/80 px-4 backdrop-blur-sm sm:px-6">
@@ -25,13 +39,7 @@ export function Topbar({
             <Menu className="h-5 w-5" />
           </button>
         )}
-        <div className="flex items-center gap-1.5 text-sm text-neutral-500">
-          <span className="hidden sm:inline">Data source:</span>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
-            <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-            Sample data
-          </span>
-        </div>
+        <h1 className="text-sm font-semibold tracking-tight text-neutral-900">{title}</h1>
       </div>
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">

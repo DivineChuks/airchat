@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Search } from "lucide-react";
 
 const STATUSES = ["new", "assigned", "in_progress", "resolved", "closed"];
 const PRIORITIES = ["low", "medium", "high", "critical"];
@@ -40,13 +41,16 @@ export function FilterBar() {
     <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
       <div className="min-w-55 flex-1">
         <label className="mb-1 block text-xs font-medium text-neutral-500">Search</label>
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Message, reference, citizen..."
-          className="w-full rounded-lg border border-neutral-300 bg-white px-2.5 py-1.5 text-sm text-neutral-900 outline-none focus:border-blue-600"
-        />
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-neutral-400" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Message, reference, citizen..."
+            className="w-full rounded-lg border border-neutral-300 bg-white py-1.5 pl-8 pr-2.5 text-sm text-neutral-900 outline-none transition focus:border-blue-600 focus:ring-1 focus:ring-blue-600/20"
+          />
+        </div>
       </div>
 
       <div>
@@ -54,7 +58,7 @@ export function FilterBar() {
         <select
           defaultValue={searchParams.get("status") ?? ""}
           onChange={(e) => updateParam("status", e.target.value)}
-          className="rounded-lg border border-neutral-300 bg-white px-2.5 py-1.5 text-sm text-neutral-900 outline-none focus:border-blue-600"
+          className="rounded-lg border border-neutral-300 bg-white px-2.5 py-1.5 text-sm text-neutral-900 outline-none transition focus:border-blue-600 focus:ring-1 focus:ring-blue-600/20"
         >
           <option value="">All</option>
           {STATUSES.map((s) => (
@@ -70,7 +74,7 @@ export function FilterBar() {
         <select
           defaultValue={searchParams.get("priority") ?? ""}
           onChange={(e) => updateParam("priority", e.target.value)}
-          className="rounded-lg border border-neutral-300 bg-white px-2.5 py-1.5 text-sm text-neutral-900 outline-none focus:border-blue-600"
+          className="rounded-lg border border-neutral-300 bg-white px-2.5 py-1.5 text-sm text-neutral-900 outline-none transition focus:border-blue-600 focus:ring-1 focus:ring-blue-600/20"
         >
           <option value="">All</option>
           {PRIORITIES.map((p) => (
