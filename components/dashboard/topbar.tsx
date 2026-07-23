@@ -7,7 +7,7 @@ import { logoutAction } from "@/app/login/actions";
 const PAGE_TITLES: { test: (pathname: string) => boolean; title: string }[] = [
   { test: (p) => p === "/dashboard", title: "Overview" },
   { test: (p) => p === "/dashboard/settings", title: "Settings" },
-  { test: (p) => p === "/reports", title: "Reports" },
+  { test: (p) => p === "/reports", title: "Issue Management" },
   { test: (p) => p.startsWith("/reports/"), title: "Report Details" },
 ];
 
