@@ -43,7 +43,7 @@ export default async function ReportsPage({
     const params = new URLSearchParams(filterQuery);
     if (p > 1) params.set("page", String(p));
     const qs = params.toString();
-    return `/dashboard/reports${qs ? `?${qs}` : ""}`;
+    return `/reports${qs ? `?${qs}` : ""}`;
   };
 
   return (
@@ -54,7 +54,7 @@ export default async function ReportsPage({
           <p className="mt-1 text-sm text-neutral-500">{total} reports</p>
         </div>
         <ExportBar
-          exportHref={`/dashboard/reports/export${filterQuery ? `?${filterQuery}` : ""}`}
+          exportHref={`/reports/export${filterQuery ? `?${filterQuery}` : ""}`}
         />
       </div>
 
@@ -79,7 +79,7 @@ export default async function ReportsPage({
             {reports.map((r) => (
               <tr key={r.id} className="align-top transition-colors hover:bg-blue-50/40">
                 <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-neutral-400">
-                  <Link href={`/dashboard/reports/${r.id}`} className="hover:text-blue-700">
+                  <Link href={`/reports/${r.id}`} className="hover:text-blue-700">
                     {r.reference_number}
                   </Link>
                 </td>
@@ -92,7 +92,7 @@ export default async function ReportsPage({
                   </div>
                 </td>
                 <td className="max-w-70 px-4 py-3 text-neutral-700">
-                  <Link href={`/dashboard/reports/${r.id}`} className="line-clamp-2 hover:text-blue-700">
+                  <Link href={`/reports/${r.id}`} className="line-clamp-2 hover:text-blue-700">
                     {r.summary ?? r.message}
                   </Link>
                 </td>

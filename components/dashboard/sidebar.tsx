@@ -7,7 +7,7 @@ import { FileWarning, Settings } from "lucide-react";
 // Overview is intentionally left out of the nav — it's still all seed/mock
 // aggregate stats, not something worth surfacing to users yet.
 const NAV_ITEMS: { href: string; label: string; icon: typeof Settings; exact?: boolean }[] = [
-  { href: "/dashboard/reports", label: "Reports", icon: FileWarning },
+  { href: "/reports", label: "Reports", icon: FileWarning },
 ];
 
 const FOOTER_ITEM = { href: "/dashboard/settings", label: "Settings", icon: Settings };

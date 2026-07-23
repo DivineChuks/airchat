@@ -21,7 +21,7 @@ export async function loginAction(
     return { error: "Invalid email or password." };
   }
 
-  redirect("/dashboard");
+  redirect("/reports");
 }
 
 export async function logoutAction() {

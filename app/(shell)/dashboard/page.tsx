@@ -90,7 +90,7 @@ export default async function OverviewPage() {
       <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-medium text-neutral-700">Recent activity</h2>
-          <Link href="/dashboard/reports" className="text-xs font-medium text-blue-700 hover:text-blue-600">
+          <Link href="/reports" className="text-xs font-medium text-blue-700 hover:text-blue-600">
             View all reports →
           </Link>
         </div>

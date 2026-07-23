@@ -36,7 +36,7 @@ export default async function ReportDetailPage({
   return (
     <div className="mx-auto max-w-3xl space-y-4">
       <Link
-        href="/dashboard/reports"
+        href="/reports"
         className="inline-flex items-center gap-1.5 text-sm font-medium text-neutral-500 hover:text-neutral-800"
       >
         <ArrowLeft className="h-4 w-4" />
